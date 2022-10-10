@@ -5,6 +5,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="LivetCask.Behaviors" Version="4.0.2" />
+    <PackageReference Include="LivetCask.Messaging" Version="4.0.2" />
     <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
+    <PackageReference Include="ReactiveProperty.WPF" Version="8.1.2" />
   </ItemGroup>
 </Project>

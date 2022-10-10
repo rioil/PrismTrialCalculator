@@ -2,9 +2,75 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
+        xmlns:viewmodels="clr-namespace:PrismTrialCalculator.ViewModels"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:model="clr-namespace:PrismTrialCalculator.Models"
+        xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
+        mc:Ignorable="d"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="350" Width="525" >
+        Title="{Binding Title.Value}" Height="350" Width="525" >
+
+    <behaviors:Interaction.Triggers>
+        <l:InteractionMessageTrigger MessageKey="Confirmation" Messenger="{Binding Messenger}">
+            <l:ConfirmationDialogInteractionMessageAction InvokeActionOnlyWhenWindowIsActive="False"/>
+        </l:InteractionMessageTrigger>
+
+        <l:InteractionMessageTrigger MessageKey="Information" Messenger="{Binding Messenger}">
+            <l:InformationDialogInteractionMessageAction InvokeActionOnlyWhenWindowIsActive="False"/>
+        </l:InteractionMessageTrigger>
+
+        <behaviors:EventTrigger EventName="Closed">
+            <l:DataContextDisposeAction />
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
+
     <Grid>
-        <ContentControl prism:RegionManager.RegionName="ContentRegion" />
+        <!--<ContentControl prism:RegionManager.RegionName="ContentRegion" />-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+
+            <Grid.Resources>
+                <Style TargetType="TextBox">
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Height" Value="24"/>
+                </Style>
+
+                <ObjectDataProvider x:Key="Operators" MethodName="GetValues"
+                                    ObjectType="{x:Type System:Enum}">
+                    <ObjectDataProvider.MethodParameters>
+                        <x:Type TypeName="model:EOperator"/>
+                    </ObjectDataProvider.MethodParameters>
+                </ObjectDataProvider>
+            </Grid.Resources>
+
+            <TextBox Grid.Row="0" Text="{Binding Operand1.Value}"
+                     ToolTip="{Binding Path=(Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}"/>
+
+            <ComboBox Grid.Row="1"
+                      ItemsSource="{Binding Source={StaticResource Operators}}"
+                      SelectedItem="{Binding Operator.Value}"
+                      VerticalContentAlignment="Center"/>
+
+            <TextBox Grid.Row="2" Text="{Binding Operand2.Value}"
+                     ToolTip="{Binding Path=(Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}"/>
+            <Button Grid.Row="3" Content="Calculate" Command="{Binding CaluculateCommand}"/>
+            <TextBlock Grid.Row="4" Text="{Binding Result.Value}"/>
+        </Grid>
     </Grid>
 </Window>
